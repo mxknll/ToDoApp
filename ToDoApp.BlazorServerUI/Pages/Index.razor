@@ -1,0 +1,95 @@
+﻿@page "/"
+
+@inject IAssignmentRepository AssignmentRepository
+
+<h1>To Do List</h1>
+
+<h3>Add new Task</h3>
+<EditForm Model="@newAssignment" OnValidSubmit="@AddNewAssignment">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <InputText @bind-Value="newAssignment.Caption" />
+    <InputText @bind-Value="newAssignment.Text" />
+
+    <button type="submit" class="btn btn-primary">Sumbit</button>
+</EditForm>
+
+<h3>Tasks</h3>
+
+@if (assignments is null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (assignments.Any() == false)
+{
+    <p><em>No tasks found. Please add some.</em></p>
+}
+else
+{
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Caption</th>
+                    <th>Text</th>
+                    <th>Status</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var assignment in assignments)
+                {
+                    <tr>
+                        <td>@assignment.Caption</td>
+                        <td>@assignment.Text</td>
+                        <td>@assignment.Status</td>
+                        <td class="pt-3-half">
+                            <span>
+                                <button @onclick="@(() => RemoveAssignment(assignment))"><i class="material-icons">delete</i></button>
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+
+    List<Assignment> assignments;
+
+    NewAssignmentModel newAssignment = new();
+
+    protected override void OnInitialized()
+    {
+        assignments = AssignmentRepository.GetAll().ToList();
+    }
+
+    private void AddNewAssignment()
+    {
+        Assignment assignment = new()
+        {
+            Caption = newAssignment.Caption,
+            Text = newAssignment.Text
+        };
+
+        AssignmentRepository.Insert(assignment);
+        AssignmentRepository.Save();
+
+        assignments.Add(assignment);
+
+        newAssignment = new();
+    }
+
+    private void RemoveAssignment(Assignment assignment)
+    {
+        AssignmentRepository.Delete(assignment.AssignmentId);
+        AssignmentRepository.Save();
+
+        assignments.Remove(assignment);
+    }
+
+}
+
+
