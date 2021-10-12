@@ -26,7 +26,7 @@ namespace ToDoApp.UnitTests
 
             var result = repository.GetAll();
 
-            Assert.Equal(5, result.ToList().Count());
+            Assert.Equal(3, result.ToList().Count());
         }
 
         private void SeedDb(AssignmentDbContext dbContext)
