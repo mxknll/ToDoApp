@@ -6,7 +6,7 @@ namespace ToDoApp.DataAccess.GenericRepository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly AssignmentDbContext _dbContext;
+        protected readonly AssignmentDbContext _dbContext;
         private DbSet<T> _table = null;
 
         public GenericRepository(AssignmentDbContext dbContext)

@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.31613.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoApp.DataAccess", "ToDoApp.DataAccess\ToDoApp.DataAccess.csproj", "{250C2841-69E0-4590-A1BC-C436C6D00E7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoApp.BlazorServerUI", "ToDoApp.BlazorServerUI\ToDoApp.BlazorServerUI.csproj", "{5BA6D28C-7730-458A-969E-2A26907465F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoApp.BlazorServerUI", "ToDoApp.BlazorServerUI\ToDoApp.BlazorServerUI.csproj", "{5BA6D28C-7730-458A-969E-2A26907465F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoApp.Tests", "ToDoApp.Tests\ToDoApp.Tests.csproj", "{13E9D808-DCE1-4E70-80D9-5BC650669884}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoApp.Tests", "ToDoApp.Tests\ToDoApp.Tests.csproj", "{13E9D808-DCE1-4E70-80D9-5BC650669884}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

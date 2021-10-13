@@ -7,40 +7,43 @@ using ToDoApp.DataAccess.Models;
 using ToDoApp.DataAccess.Repository;
 using Xunit;
 
-namespace ToDoApp.UnitTests
+namespace ToDoApp.Tests
 {
-    public class UnitTests
+    public class UnitTests : TestBase
     {
         [Fact]
-        public void GetAll_ShouldReturnAllAssigments()
+        public void GetAll_ReturnsAllAssigments()
         {
-            var options = new DbContextOptionsBuilder<AssignmentDbContext>()
-                .UseInMemoryDatabase(databaseName: "Assignment")
-                .Options;
+            var result = repository.GetAll();
 
-            var dbContext = new AssignmentDbContext(options);
+            Assert.Equal(5, result.ToList().Count());
+        }
 
-            SeedDb(dbContext);
+        [Fact]
+        public void Insert_InsertsOneAssignmentWithStatusNew()
+        {
+            repository.Insert(new Assignment()
+            {
+                Text = "Lala",
+            });
+            repository.Save();
 
-            var repository = new AssignmentRepository(dbContext);
+            var result = repository.GetAll();
+
+            Assert.Equal(6, result.ToList().Count());
+            Assert.Equal("new", result.Last().Status);
+        }
+
+        [Fact]
+        public void DeleteAllFinishedAssignments_DeletesTwoAssignments()
+        {
+            repository.DeleteAllFinishedAssignments();
+            repository.Save();
 
             var result = repository.GetAll();
 
             Assert.Equal(3, result.ToList().Count());
         }
 
-        private void SeedDb(AssignmentDbContext dbContext)
-        {
-            List<Assignment> assignments = new()
-            {
-                new Assignment() { Caption = "Test", Text = " Test Test Test" },
-                new Assignment() { Caption = "Test", Text = " Test Test Test" },
-                new Assignment() { Caption = "Test", Text = " Test Test Test" },
-                new Assignment() { Caption = "Test", Text = " Test Test Test" },
-                new Assignment() { Caption = "Test", Text = " Test Test Test" },
-            };
-            dbContext.Assignments.AddRange(assignments);
-            dbContext.SaveChanges();
-        }
     }
 }

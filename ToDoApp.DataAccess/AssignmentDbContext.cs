@@ -5,7 +5,7 @@ namespace ToDoApp.DataAccess
 {
     public class AssignmentDbContext : DbContext
     {
-        public AssignmentDbContext(DbContextOptions options) : base(options)
+        public AssignmentDbContext(DbContextOptions<AssignmentDbContext> options) : base(options)
         {
 
         }

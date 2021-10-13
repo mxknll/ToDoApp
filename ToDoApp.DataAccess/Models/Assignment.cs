@@ -12,12 +12,21 @@ namespace ToDoApp.DataAccess.Models
         public int AssignmentId { get; set; }
 
         [Required]
-        public string Caption { get; set; }
-
-        [Required]
         public string Text { get; set; }
 
         [Required]
         public string Status { get; set; } = "new";
+
+        public enum StatusOptions
+        {
+            @new,
+            active,
+            done
+        }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 }

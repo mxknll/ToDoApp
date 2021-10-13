@@ -1,0 +1,83 @@
+﻿<style>
+    .btn {
+        padding-top: 0px;
+        padding-bottom: 0px;
+        display:flex;
+        align-items: center;      
+    }
+</style>
+
+<div class="input-group" @onmouseover="MouseIn" @onmouseout="MouseOut" tabindex="-1">
+    <input @ref="editInput" type="text" class="form-control border-right-0" @bind-value="editText" @bind-value:event="oninput"
+           @onfocus="StartEdit" @onblur="OnExitTextBox" @onkeyup="KeyboardEventHandler">
+
+    <div class="input-group-append">
+        @if (isInEditMode)
+        {
+            <!--Submit edit-->
+            <button type="button" class="btn btn-sm btn-outline-secondary border border-left-0 border-right-0" tabindex="-1" disabled="@(inputIsValid == false)"
+                    @onclick="SubmitEdit">
+                <i class="material-icons">done</i>
+            </button>
+            <!--Cancel edit-->
+            <button type="button" class="btn btn-sm btn-outline-secondary border border-left-0 border-right-0" tabindex="-1"
+                    @onclick="CancelEdit">
+                <i class="material-icons">cancel</i>
+            </button>
+        }
+        else
+        {
+            <!--Edit item-->
+            <button type="button" class="btn btn-sm btn-outline-secondary border border-left-0 border-right-0" tabindex="-1"
+                    @onclick="StartEdit">
+                <i class="material-icons">edit</i>
+            </button>
+        }
+        <!--Remove item-->
+        <button type="button" class="btn btn-sm btn-outline-secondary border border-left-0 border-right-0" tabindex="-1"
+                @onclick="@(()=> OnRemove.InvokeAsync(Asgnt))">
+            <i class="material-icons">delete</i>
+        </button>
+
+        <!--Change item status-->
+        <button type="button" class="btn btn-sm btn-outline-secondary border border-left-0 border-right-0" disabled="@(Asgnt.Status == status1)" tabindex="-1"
+                @onclick="@(e => ChangeStatus(status1))">
+            <i class="material-icons" style="color:red">
+                @if (Asgnt.Status == status1)
+                {
+                    <text>radio_button_checked</text>
+                }
+                else
+                {
+                    <text>radio_button_unchecked</text>
+                }
+            </i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary border border-left-0 border-right-0" disabled="@(Asgnt.Status == status2)" tabindex="-1"
+                @onclick="@(e => ChangeStatus(status2))">
+            <i class="material-icons" style="color:orange">
+                @if (Asgnt.Status == status2)
+                {
+                    <text>radio_button_checked</text>
+                }
+                else
+                {
+                    <text>radio_button_unchecked</text>
+                }
+            </i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary border border-left-0" disabled="@(Asgnt.Status == status3)" tabindex="-1"
+                @onclick="@(e => ChangeStatus(status3))">
+            <i class="material-icons" style="color:green">
+                @if (Asgnt.Status == status3)
+                {
+                    <text>radio_button_checked</text>
+                }
+                else
+                {
+                    <text>radio_button_unchecked</text>
+                }
+            </i>
+        </button>
+    </div>
+</div>

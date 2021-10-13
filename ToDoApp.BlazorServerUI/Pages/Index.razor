@@ -1,95 +1,55 @@
 ﻿@page "/"
 
-@inject IAssignmentRepository AssignmentRepository
+<!--Add new task-->
+<div class="input-group mb-3">
+    <input id="text" @ref="textInput" type="text" class="form-control" placeholder="Add new task"
+           @bind-value="newAssignmentText" @bind-value:event="oninput"
+           @onkeyup="KeyboardEventHandler">
+    <div class="input-group-append">
+        <button type="submit" class="btn btn-success"
+                @onclick="@(() => AddNewAssignment())" disabled="@(inputIsValid == false)"
+                @onkeyup="KeyboardEventHandler">
+            Add
+        </button>
+    </div>
+</div>
 
-<h1>To Do List</h1>
-
-<h3>Add new Task</h3>
-<EditForm Model="@newAssignment" OnValidSubmit="@AddNewAssignment">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <InputText @bind-Value="newAssignment.Caption" />
-    <InputText @bind-Value="newAssignment.Text" />
-
-    <button type="submit" class="btn btn-primary">Sumbit</button>
-</EditForm>
-
-<h3>Tasks</h3>
-
-@if (assignments is null)
+<!--Tasks-->
+@if (Assignments is null)
 {
     <p><em>Loading...</em></p>
 }
-else if (assignments.Any() == false)
+else if (Assignments.Any() == false)
 {
-    <p><em>No tasks found. Please add some.</em></p>
+    <p><em>All done :)</em></p>
 }
 else
 {
-    <div class="card-body">
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Caption</th>
-                    <th>Text</th>
-                    <th>Status</th>
-                    <th>Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var assignment in assignments)
-                {
-                    <tr>
-                        <td>@assignment.Caption</td>
-                        <td>@assignment.Text</td>
-                        <td>@assignment.Status</td>
-                        <td class="pt-3-half">
-                            <span>
-                                <button @onclick="@(() => RemoveAssignment(assignment))"><i class="material-icons">delete</i></button>
-                            </span>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
-
-@code {
-
-    List<Assignment> assignments;
-
-    NewAssignmentModel newAssignment = new();
-
-    protected override void OnInitialized()
-    {
-        assignments = AssignmentRepository.GetAll().ToList();
-    }
-
-    private void AddNewAssignment()
-    {
-        Assignment assignment = new()
+    <!--List of tasks-->
+    <ul style="padding-left: 0px;">
+        @foreach (var item in Assignments)
         {
-            Caption = newAssignment.Caption,
-            Text = newAssignment.Text
-        };
+            if (item != null && (hideFinishedTasks == true && item.Status == "done") == false)
+            {
+                <li style="list-style-type:none; padding-bottom:2px;" @key="item.AssignmentId" tabindex="1">
+                    <AssignmentComponent Asgnt="item"
+                                         OnRemove="@(()=> RemoveAssignment(item))" OnUpdate="@(()=> UpdateAssignment(item))" />
+                </li>
+            }
+        }
+    </ul>
 
-        AssignmentRepository.Insert(assignment);
-        AssignmentRepository.Save();
-
-        assignments.Add(assignment);
-
-        newAssignment = new();
-    }
-
-    private void RemoveAssignment(Assignment assignment)
-    {
-        AssignmentRepository.Delete(assignment.AssignmentId);
-        AssignmentRepository.Save();
-
-        assignments.Remove(assignment);
-    }
-
+    <!--Option to hide tasks marked as 'done'-->
+<div class="input-group mb-3" hidden="@(Assignments.Any(x => x.Status == "done") == false)">
+    <div class="input-group-prepend">
+        <div class="input-group-text">
+            <input type="checkbox" @bind-value="hideFinishedTasks">
+        </div>
+    </div>
+    <input type="text" class="form-control border-left-0" value="Hide finished tasks" disabled="disabled">
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary border" type="button" @onclick="RemoveAllFinishedTasks">Remove all finished tasks</button>
+    </div>
+</div>
 }
-
 
