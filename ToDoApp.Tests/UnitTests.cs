@@ -33,11 +33,11 @@ namespace ToDoApp.UnitTests
         {
             List<Assignment> assignments = new()
             {
-                new Assignment() { Caption = "Test", Text = " Test Test Test" },
-                new Assignment() { Caption = "Test", Text = " Test Test Test" },
-                new Assignment() { Caption = "Test", Text = " Test Test Test" },
-                new Assignment() { Caption = "Test", Text = " Test Test Test" },
-                new Assignment() { Caption = "Test", Text = " Test Test Test" },
+                new Assignment() { Text = " Test Test Test", Status = "done" },
+                new Assignment() { Text = " Test Test Test", Status = "active" },
+                new Assignment() { Text = " Test Test Test" },
+                new Assignment() { Text = " Test Test Test" },
+                new Assignment() { Text = " Test Test Test" },
             };
             dbContext.Assignments.AddRange(assignments);
             dbContext.SaveChanges();

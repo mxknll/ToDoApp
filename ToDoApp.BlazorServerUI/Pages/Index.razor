@@ -2,84 +2,106 @@
 
 @inject IAssignmentRepository AssignmentRepository
 
-<h1>To Do List</h1>
 
-<h3>Add new Task</h3>
-<EditForm Model="@newAssignment" OnValidSubmit="@AddNewAssignment">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <InputText @bind-Value="newAssignment.Caption" />
-    <InputText @bind-Value="newAssignment.Text" />
+<!--Add new task-->
+<div class="input-group mb-3">
+    <input @ref="textInput" type="text" class="form-control" placeholder="Add new task"
+           @bind-value="newAssignmentText" @bind-value:event="oninput"
+           @onkeyup="KeyboardEventHandler">
+    <div class="input-group-append">
+        <button type="submit" class="btn btn-success"
+                @onclick="@(() => AddNewAssignment())" disabled="@(inputIsValid == false)"
+                @onkeyup="KeyboardEventHandler">
+            Add
+        </button>
+    </div>
+</div>
 
-    <button type="submit" class="btn btn-primary">Sumbit</button>
-</EditForm>
-
-<h3>Tasks</h3>
-
+<!--Tasks-->
 @if (assignments is null)
 {
     <p><em>Loading...</em></p>
 }
 else if (assignments.Any() == false)
 {
-    <p><em>No tasks found. Please add some.</em></p>
+    <p><em>All done :)</em></p>
 }
 else
 {
-    <div class="card-body">
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Caption</th>
-                    <th>Text</th>
-                    <th>Status</th>
-                    <th>Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var assignment in assignments)
-                {
-                    <tr>
-                        <td>@assignment.Caption</td>
-                        <td>@assignment.Text</td>
-                        <td>@assignment.Status</td>
-                        <td class="pt-3-half">
-                            <span>
-                                <button @onclick="@(() => RemoveAssignment(assignment))"><i class="material-icons">delete</i></button>
-                            </span>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <!--List of tasks-->
+    <ul style="padding-left: 0px;">
+        @foreach (var item in assignments)
+        {
+            if (item != null && (hideFinishedTasks == true && item.Status == "done") == false)
+            {
+                <li style="list-style-type:none; padding-bottom:2px;" @key="item.AssignmentId" tabindex="1">
+                    <AssignmentComponent Asgnt="item"
+                                         OnRemove="@(()=> RemoveAssignment(item))" OnUpdate="@(()=> UpdateAssignment(item))" />
+                </li>
+            }
+        }
+    </ul>
+
+    <!--Option to hide tasks marked as 'done'-->
+<div class="input-group mb-3" hidden="@(assignments.Any(x => x.Status == "done") == false)">
+    <div class="input-group-prepend">
+        <div class="input-group-text">
+            <input type="checkbox" @bind-value="hideFinishedTasks">
+        </div>
     </div>
+    <input type="text" class="form-control border-left-0" value="Hide finished tasks" disabled="disabled">
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary border" type="button" @onclick="RemoveAllFinishedTasks">Remove all finished tasks</button>
+    </div>
+</div>
 }
+
 
 @code {
 
     List<Assignment> assignments;
 
-    NewAssignmentModel newAssignment = new();
+    private string newAssignmentText = string.Empty;
+    private bool inputIsValid => string.IsNullOrWhiteSpace(newAssignmentText) == false;
 
-    protected override void OnInitialized()
+    // Init
+    protected override void OnParametersSet()
     {
         assignments = AssignmentRepository.GetAll().ToList();
     }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            textInput.FocusAsync();
+        }
+
+    }
+
+    // Hide tasks marked as 'done'
+    private bool hideFinishedTasks = false;
+
+    // Add task textbox
+    ElementReference textInput;
+
+    // Methods
+
 
     private void AddNewAssignment()
     {
         Assignment assignment = new()
         {
-            Caption = newAssignment.Caption,
-            Text = newAssignment.Text
+            Text = newAssignmentText
         };
 
         AssignmentRepository.Insert(assignment);
         AssignmentRepository.Save();
 
-        assignments.Add(assignment);
+        assignments = AssignmentRepository.GetAll().ToList();
 
-        newAssignment = new();
+        newAssignmentText = string.Empty;
+
+        textInput.FocusAsync();
     }
 
     private void RemoveAssignment(Assignment assignment)
@@ -87,9 +109,40 @@ else
         AssignmentRepository.Delete(assignment.AssignmentId);
         AssignmentRepository.Save();
 
-        assignments.Remove(assignment);
+        assignments = AssignmentRepository.GetAll().ToList();
     }
 
+    private void UpdateAssignment(Assignment assignment)
+    {
+        AssignmentRepository.Update(assignment);
+        AssignmentRepository.Save();
+
+        assignments = AssignmentRepository.GetAll().ToList();
+    }
+
+    private void RemoveAllFinishedTasks()
+    {
+        AssignmentRepository.DeleteAllFinishedAssignments();
+        AssignmentRepository.Save();
+
+        assignments = AssignmentRepository.GetAll().ToList();
+    }
+
+    // Keyboard input to add task
+    private async Task KeyboardEventHandler(KeyboardEventArgs args)
+    {
+        switch (args.Key)
+        {
+            case "Enter":
+                if (inputIsValid)
+                {
+                    AddNewAssignment();
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 

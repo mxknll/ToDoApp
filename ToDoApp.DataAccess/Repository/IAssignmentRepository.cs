@@ -5,5 +5,6 @@ namespace ToDoApp.DataAccess.Repository
 {
     public interface IAssignmentRepository : IGenericRepository<Assignment>
     {
+        void DeleteAllFinishedAssignments();
     }
 }
