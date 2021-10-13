@@ -14,7 +14,7 @@ namespace ToDoApp.BlazorServerUI.Pages
         [Inject]
         public IAssignmentRepository AssignmentRepository { get; set; }
 
-        List<Assignment> assignments;
+        public List<Assignment> Assignments;
 
         private string newAssignmentText = string.Empty;
         private bool inputIsValid => string.IsNullOrWhiteSpace(newAssignmentText) == false;
@@ -22,7 +22,7 @@ namespace ToDoApp.BlazorServerUI.Pages
         // Init
         protected override void OnParametersSet()
         {
-            assignments = AssignmentRepository.GetAll().ToList();
+            Assignments = AssignmentRepository.GetAll().ToList();
         }
         protected override void OnAfterRender(bool firstRender)
         {
@@ -44,19 +44,23 @@ namespace ToDoApp.BlazorServerUI.Pages
 
         private void AddNewAssignment()
         {
-            Assignment assignment = new()
+            if (inputIsValid)
             {
-                Text = newAssignmentText
-            };
+                Assignment assignment = new()
+                {
+                    Text = newAssignmentText
+                };
 
-            AssignmentRepository.Insert(assignment);
-            AssignmentRepository.Save();
+                AssignmentRepository.Insert(assignment);
+                AssignmentRepository.Save();
 
-            assignments = AssignmentRepository.GetAll().ToList();
+                Assignments = AssignmentRepository.GetAll().ToList();
 
-            newAssignmentText = string.Empty;
+                newAssignmentText = string.Empty;
 
-            textInput.FocusAsync();
+                textInput.FocusAsync();
+            }
+
         }
 
         private void RemoveAssignment(Assignment assignment)
@@ -64,7 +68,7 @@ namespace ToDoApp.BlazorServerUI.Pages
             AssignmentRepository.Delete(assignment.AssignmentId);
             AssignmentRepository.Save();
 
-            assignments = AssignmentRepository.GetAll().ToList();
+            Assignments = AssignmentRepository.GetAll().ToList();
         }
 
         private void UpdateAssignment(Assignment assignment)
@@ -72,7 +76,7 @@ namespace ToDoApp.BlazorServerUI.Pages
             AssignmentRepository.Update(assignment);
             AssignmentRepository.Save();
 
-            assignments = AssignmentRepository.GetAll().ToList();
+            Assignments = AssignmentRepository.GetAll().ToList();
         }
 
         private void RemoveAllFinishedTasks()
@@ -80,7 +84,7 @@ namespace ToDoApp.BlazorServerUI.Pages
             AssignmentRepository.DeleteAllFinishedAssignments();
             AssignmentRepository.Save();
 
-            assignments = AssignmentRepository.GetAll().ToList();
+            Assignments = AssignmentRepository.GetAll().ToList();
         }
 
         // Keyboard input to add task

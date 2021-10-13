@@ -2,7 +2,7 @@
 
 <!--Add new task-->
 <div class="input-group mb-3">
-    <input @ref="textInput" type="text" class="form-control" placeholder="Add new task"
+    <input id="text" @ref="textInput" type="text" class="form-control" placeholder="Add new task"
            @bind-value="newAssignmentText" @bind-value:event="oninput"
            @onkeyup="KeyboardEventHandler">
     <div class="input-group-append">
@@ -15,11 +15,11 @@
 </div>
 
 <!--Tasks-->
-@if (assignments is null)
+@if (Assignments is null)
 {
     <p><em>Loading...</em></p>
 }
-else if (assignments.Any() == false)
+else if (Assignments.Any() == false)
 {
     <p><em>All done :)</em></p>
 }
@@ -27,7 +27,7 @@ else
 {
     <!--List of tasks-->
     <ul style="padding-left: 0px;">
-        @foreach (var item in assignments)
+        @foreach (var item in Assignments)
         {
             if (item != null && (hideFinishedTasks == true && item.Status == "done") == false)
             {
@@ -40,7 +40,7 @@ else
     </ul>
 
     <!--Option to hide tasks marked as 'done'-->
-<div class="input-group mb-3" hidden="@(assignments.Any(x => x.Status == "done") == false)">
+<div class="input-group mb-3" hidden="@(Assignments.Any(x => x.Status == "done") == false)">
     <div class="input-group-prepend">
         <div class="input-group-text">
             <input type="checkbox" @bind-value="hideFinishedTasks">

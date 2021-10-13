@@ -28,7 +28,7 @@ namespace ToDoApp.BlazorServerUI
 
             services.AddDbContext<AssignmentDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DevConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("DevConnectionString"));
             });
         }
 
